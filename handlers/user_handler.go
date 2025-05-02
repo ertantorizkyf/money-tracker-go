@@ -23,7 +23,16 @@ func NewUserHandler(userUseCase *usecases.UserUseCase) *UserHandler {
 
 func (h *UserHandler) RegisterUser(c *gin.Context) {
 	req := dto.RegisterReq{}
-	c.Bind(&req)
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
 
 	isReqValid, message := helpers.ValidateRegisterReq(req)
 	if !isReqValid {
@@ -67,7 +76,16 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 
 func (h *UserHandler) Login(c *gin.Context) {
 	req := dto.LoginReq{}
-	c.Bind(&req)
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
 
 	isReqValid, message := helpers.ValidateLoginReq(req)
 	if !isReqValid {
