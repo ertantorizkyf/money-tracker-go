@@ -8,7 +8,6 @@ import (
 	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
 	"github.com/ertantorizkyf/money-tracker-go/helpers"
-	helper "github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/ertantorizkyf/money-tracker-go/models"
 	"github.com/ertantorizkyf/money-tracker-go/repositories"
 	"github.com/gin-gonic/gin"
@@ -33,24 +32,24 @@ func (uc *UserUseCase) RegisterUser(c *gin.Context, req dto.RegisterReq) (*strin
 	})
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 
 	if user.ID > 0 {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_DATA_TAKEN)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_DATA_TAKEN)
 		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_DATA_TAKEN)
 	}
 
 	hashedPassword, err := helpers.HashPassword(req.Password)
 	if err != nil {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 
 	timeParsedDOB, err := time.Parse("2006-01-02", req.DOB)
 	if err != nil {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 
@@ -65,13 +64,13 @@ func (uc *UserUseCase) RegisterUser(c *gin.Context, req dto.RegisterReq) (*strin
 
 	err = uc.UserRepo.Create(newUser)
 	if err != nil {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 
 	jwtToken, err := helpers.GenerateToken(newUser)
 	if err != nil {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 
@@ -85,7 +84,7 @@ func (uc *UserUseCase) Login(c *gin.Context, req dto.LoginReq) (*string, error) 
 	})
 
 	if err != nil {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 
@@ -96,7 +95,7 @@ func (uc *UserUseCase) Login(c *gin.Context, req dto.LoginReq) (*string, error) 
 
 	jwtToken, err := helpers.GenerateToken(user)
 	if err != nil {
-		helper.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
 

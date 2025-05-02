@@ -117,3 +117,34 @@ func ValidateLoginReq(req dto.LoginReq) (bool, string) {
 
 	return true, ""
 }
+
+func ValidateTransactionQueryParam(query dto.TransactionQueryParam) (bool, string) {
+	// START DATE AND END DATE MUST BE YYYY-MM-DD
+	if query.StartDate != "" {
+		_, err := time.Parse("2006-01-02", query.StartDate)
+		if err != nil {
+			return false, "Invalid date"
+		}
+	}
+
+	if query.EndDate != "" {
+		_, err := time.Parse("2006-01-02", query.EndDate)
+		if err != nil {
+			return false, "Invalid date"
+		}
+	}
+
+	return true, ""
+}
+
+func ValidateTransactionSummaryQueryParam(query dto.TransactionSummaryQueryParam) (bool, string) {
+	// START DATE AND END DATE MUST BE YYYY-MM-DD
+	if query.Period != "" {
+		_, err := time.Parse("2006-01", query.Period)
+		if err != nil {
+			return false, "Invalid period"
+		}
+	}
+
+	return true, ""
+}

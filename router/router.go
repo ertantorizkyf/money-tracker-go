@@ -17,18 +17,33 @@ func SetupRouter() *gin.Engine {
 
 	// SETUP REPOS
 	userRepo := repositories.NewUserRepository()
+	transactionRepo := repositories.NewTransactionRepository()
+	transactionSourceRepo := repositories.NewTransactionSourceRepository()
+	transactionCategoryRepo := repositories.NewTransactionCategoryRepository()
 
 	// SETUP USECASES
 	userUseCase := usecases.NewUserUsecase(userRepo)
+	transactionUseCase := usecases.NewTransactionUsecase(transactionRepo)
+	transactionSourceUseCase := usecases.NewTransactionSourceUsecase(transactionSourceRepo)
+	transactionCategoryUseCase := usecases.NewTransactionCategoryUsecase(transactionCategoryRepo)
 
 	// SETUP HANDLERS
 	userHandler := handlers.NewUserHandler(userUseCase)
+	transactionHandler := handlers.NewTransactionHandler(transactionUseCase)
+	transactionSourceHandler := handlers.NewTransactionSourceHandler(transactionSourceUseCase)
+	transactionCategoryHandler := handlers.NewTransactionCategoryHandler(transactionCategoryUseCase)
 
 	// DEFINE API
 	apiGroup := router.Group("/api")
 
 	// REGISTER ROUTES
 	userRoutes(apiGroup, userHandler)
+	transactionRoutes(
+		apiGroup,
+		transactionHandler,
+		transactionSourceHandler,
+		transactionCategoryHandler,
+	)
 
 	router.GET("/ping", func(c *gin.Context) {
 		response := dto.SetGeneralResp(

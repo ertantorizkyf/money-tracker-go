@@ -14,6 +14,7 @@ entity users {
 
 entity transactions {
     id: int(PK)
+    trx_date: date
     type: enum{INCOME, EXPENSE}
     user_id: int (FK)
     source_id: int (FK)
