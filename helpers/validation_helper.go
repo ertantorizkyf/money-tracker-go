@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/ertantorizkyf/money-tracker-go/dto"
@@ -43,7 +44,11 @@ func IsPasswordValid(password string) bool {
 	isValid := passwordRegex.MatchString(password)
 
 	// Can't be commonly used passwords
-	// Compared with hashed library in assets/common_password_libs_hashed.txt
+	// * COMMON HASHES LIBRARY DITCHED BECAUSE OF SLOW PERFORMANCE: TESTED ~ >30 MINUTES TO CHECK ALL HASHES IN LIBRARY
+	// * Compared with hashed library in assets/common_password_libs_hashed.txt
+	// * commonHashes := make(map[string]struct{})
+	// Use plain common pass lib instead
+	commonPasswords := make(map[string]struct{})
 	filePath := os.Getenv("COMMON_PASS_LIB_PATH")
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -55,17 +60,31 @@ func IsPasswordValid(password string) bool {
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		hashed := scanner.Text()
-		if CheckPasswordHash(password, hashed) {
-			// Password is common
-			isValid = false
-			return isValid
+		password := strings.TrimSpace(scanner.Text())
+		if password != "" {
+			commonPasswords[password] = struct{}{}
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		isValid = false
 		LogWithSeverity("ERR", fmt.Errorf("error reading file: %w", err))
+		return isValid
+	}
+
+	// * COMMON HASHES LIBRARY DITCHED BECAUSE OF SLOW PERFORMANCE: TESTED ~ >30 MINUTES TO CHECK ALL HASHES IN LIBRARY
+	// * Compared with hashed library in assets/common_password_libs_hashed.txt
+	// * for hashed := range commonHashes {
+	// *   if CheckPasswordHash(password, hashed) {
+	// * 	   // Password is common
+	// * 	   isValid = false
+	// * 	   return isValid
+	// *   }
+	// * }
+
+	// Use plain common pass lib instead
+	if _, exists := commonPasswords[password]; exists {
+		isValid = false
 		return isValid
 	}
 
