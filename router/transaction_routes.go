@@ -28,6 +28,7 @@ func transactionRoutes(
 
 		// TRX GROUP
 		transactionGroup.GET("/", transactionHandler.GetAllTransactions)
+		transactionGroup.POST("/", transactionHandler.CreateTransaction)
 		transactionGroup.GET("/summary", transactionHandler.GetTransactionSummary)
 	}
 }

@@ -93,3 +93,29 @@ func (r *TransactionRepository) SummarizeByPeriod(whereCondition models.Transact
 
 	return summary, nil
 }
+
+func (r *TransactionRepository) CreateTransaction(transaction models.Transaction) error {
+	tx := r.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	err := tx.Create(&transaction).Error
+	if err != nil {
+		tx.Rollback()
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
+}

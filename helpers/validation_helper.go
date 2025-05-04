@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
 )
 
@@ -157,11 +158,28 @@ func ValidateTransactionQueryParam(query dto.TransactionQueryParam) (bool, strin
 }
 
 func ValidateTransactionSummaryQueryParam(query dto.TransactionSummaryQueryParam) (bool, string) {
-	// START DATE AND END DATE MUST BE YYYY-MM-DD
+	// PERIOD MUST BE YYYY-MM
 	if query.Period != "" {
 		_, err := time.Parse("2006-01", query.Period)
 		if err != nil {
 			return false, "Invalid period"
+		}
+	}
+
+	return true, ""
+}
+
+func ValidateCreateTransactionSummaryRequest(req dto.CreateTransactionRequest) (bool, string) {
+	// TYPE MUST BE "income" OR "expense"
+	if req.Type != constants.TRANSACTION_TYPE_INCOME && req.Type != constants.TRANSACTION_TYPE_EXPENSE {
+		return false, "Invalid transaction type"
+	}
+
+	// TRX DATE MUST BE YYYY-MM-DD
+	if req.TrxDate != "" {
+		_, err := time.Parse("2006-01-02", req.TrxDate)
+		if err != nil {
+			return false, "Invalid transaction date"
 		}
 	}
 

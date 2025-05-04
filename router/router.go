@@ -23,7 +23,11 @@ func SetupRouter() *gin.Engine {
 
 	// SETUP USECASES
 	userUseCase := usecases.NewUserUsecase(userRepo)
-	transactionUseCase := usecases.NewTransactionUsecase(transactionRepo)
+	transactionUseCase := usecases.NewTransactionUsecase(
+		transactionRepo,
+		transactionCategoryRepo,
+		transactionSourceRepo,
+	)
 	transactionSourceUseCase := usecases.NewTransactionSourceUsecase(transactionSourceRepo)
 	transactionCategoryUseCase := usecases.NewTransactionCategoryUsecase(transactionCategoryRepo)
 

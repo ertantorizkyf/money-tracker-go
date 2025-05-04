@@ -55,8 +55,24 @@ func (r *UserRepository) GetFirst(where models.UserWhere) (models.User, error) {
 }
 
 func (r *UserRepository) Create(user models.User) error {
-	err := r.DB.Create(&user).Error
+	tx := r.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	err := tx.Create(&user).Error
 	if err != nil {
+		tx.Rollback()
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	if err = tx.Commit().Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return err
 	}

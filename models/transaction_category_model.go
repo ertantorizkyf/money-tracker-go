@@ -12,5 +12,6 @@ func (TransactionCategory) TableName() string {
 }
 
 type TransactionCategoryWhere struct {
+	ID   uint
 	Type string
 }

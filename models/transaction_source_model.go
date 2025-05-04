@@ -12,5 +12,6 @@ func (TransactionSource) TableName() string {
 }
 
 type TransactionSourceWhere struct {
+	ID   uint
 	Type string
 }

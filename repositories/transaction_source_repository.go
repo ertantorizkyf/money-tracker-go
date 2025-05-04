@@ -19,6 +19,10 @@ func NewTransactionSourceRepository() *TransactionSourceRepository {
 }
 
 func constructTransactionSourceWhereCondition(query *gorm.DB, whereCondition models.TransactionSourceWhere) *gorm.DB {
+	if whereCondition.ID > 0 {
+		query = query.Where("id = ?", whereCondition.ID)
+	}
+
 	if whereCondition.Type != "" {
 		query = query.Where("type = ?", whereCondition.Type)
 	}
@@ -39,4 +43,21 @@ func (r *TransactionSourceRepository) GetAll(whereCondition models.TransactionSo
 	}
 
 	return sources, nil
+}
+
+func (r *TransactionSourceRepository) GetByID(sourceID uint) (models.TransactionSource, error) {
+	var source models.TransactionSource
+
+	query := r.DB.Model(&models.TransactionSource{})
+
+	query = constructTransactionSourceWhereCondition(query, models.TransactionSourceWhere{
+		ID: sourceID,
+	})
+
+	if err := query.First(&source).Error; err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return source, err
+	}
+
+	return source, nil
 }

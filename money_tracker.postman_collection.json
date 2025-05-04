@@ -166,7 +166,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{money_tracker_base_url}}/api/transactions?source_id=1&category_id=1&purpose=lorem ipsum&remark=lorem ipsum&start_date=2025-05-01&end_date=2025-05-01&type=income",
+							"raw": "{{money_tracker_base_url}}/api/transactions?type=expense",
 							"host": [
 								"{{money_tracker_base_url}}"
 							],
@@ -177,31 +177,37 @@
 							"query": [
 								{
 									"key": "source_id",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "category_id",
-									"value": "1"
+									"value": "1",
+									"disabled": true
 								},
 								{
 									"key": "purpose",
-									"value": "lorem ipsum"
+									"value": "lorem ipsum",
+									"disabled": true
 								},
 								{
 									"key": "remark",
-									"value": "lorem ipsum"
+									"value": "lorem ipsum",
+									"disabled": true
 								},
 								{
 									"key": "start_date",
-									"value": "2025-05-01"
+									"value": "2025-05-01",
+									"disabled": true
 								},
 								{
 									"key": "end_date",
-									"value": "2025-05-01"
+									"value": "2025-05-01",
+									"disabled": true
 								},
 								{
 									"key": "type",
-									"value": "income"
+									"value": "expense"
 								}
 							]
 						}
@@ -238,6 +244,43 @@
 									"key": "period",
 									"value": "2025-05"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "jwt_bearer_token",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"trx_date\": \"2025-05-03\",\r\n    \"type\": \"expense\",\r\n    \"source_id\": 3,\r\n    \"category_id\": 3,\r\n\t\"amount\": 200000,\r\n\t\"purpose\": \"Electric bills\",\r\n\t\"remark\": \"Paid via gopay app\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/transactions",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"transactions"
 							]
 						}
 					},

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
@@ -125,5 +126,66 @@ func (h *TransactionHandler) GetTransactionSummary(c *gin.Context) {
 		"Successfully get transaction summary",
 		false,
 		transactions,
+	))
+}
+
+func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
+	req := dto.CreateTransactionRequest{}
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
+
+	isQueryParamValid, message := helpers.ValidateCreateTransactionSummaryRequest(req)
+	if !isQueryParamValid {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			message,
+			true,
+			nil,
+		))
+		return
+	}
+
+	// GET USER ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, dto.SetGeneralResp(
+			http.StatusUnauthorized,
+			constants.ERR_MESSAGE_UNAUTHORIZED,
+			true,
+			nil,
+		))
+		return
+	}
+
+	if err := h.TransactionUseCase.CreateTransaction(userID.(uint), req); err != nil {
+		statusCode := http.StatusInternalServerError
+		errMessage := "Failed to create transaction"
+		if strings.Contains(err.Error(), constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE) {
+			statusCode = http.StatusBadRequest
+			errMessage = constants.ERR_MESSAGE_BAD_REQUEST
+		}
+
+		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
+			statusCode,
+			errMessage,
+			true,
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.SetGeneralResp(
+		http.StatusCreated,
+		"Successfully created transaction",
+		false,
+		nil,
 	))
 }

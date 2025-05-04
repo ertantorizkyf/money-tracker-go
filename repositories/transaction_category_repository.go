@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"fmt"
-
 	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/ertantorizkyf/money-tracker-go/initializers"
@@ -21,6 +19,10 @@ func NewTransactionCategoryRepository() *TransactionCategoryRepository {
 }
 
 func constructTransactionCategoryWhereCondition(query *gorm.DB, whereCondition models.TransactionCategoryWhere) *gorm.DB {
+	if whereCondition.ID > 0 {
+		query = query.Where("id = ?", whereCondition.ID)
+	}
+
 	if whereCondition.Type != "" {
 		query = query.Where("type = ?", whereCondition.Type)
 	}
@@ -31,9 +33,7 @@ func constructTransactionCategoryWhereCondition(query *gorm.DB, whereCondition m
 func (r *TransactionCategoryRepository) GetAll(whereCondition models.TransactionCategoryWhere) ([]models.TransactionCategory, error) {
 	var categories []models.TransactionCategory
 
-	fmt.Println("=== DEBUG: ", whereCondition.Type)
-
-	query := r.DB
+	query := r.DB.Model(&models.TransactionCategory{})
 
 	query = constructTransactionCategoryWhereCondition(query, whereCondition)
 
@@ -43,4 +43,21 @@ func (r *TransactionCategoryRepository) GetAll(whereCondition models.Transaction
 	}
 
 	return categories, nil
+}
+
+func (r *TransactionCategoryRepository) GetByID(categoryID uint) (models.TransactionCategory, error) {
+	var category models.TransactionCategory
+
+	query := r.DB.Model(&models.TransactionCategory{})
+
+	query = constructTransactionCategoryWhereCondition(query, models.TransactionCategoryWhere{
+		ID: categoryID,
+	})
+
+	if err := query.First(&category).Error; err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return category, err
+	}
+
+	return category, nil
 }
