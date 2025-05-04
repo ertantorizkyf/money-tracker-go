@@ -1,6 +1,8 @@
 package usecases
 
 import (
+	"time"
+
 	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
 	"github.com/ertantorizkyf/money-tracker-go/helpers"
@@ -38,6 +40,10 @@ func (uc *TransactionUseCase) GetAllTransactions(userID uint, query dto.Transact
 }
 
 func (uc *TransactionUseCase) GetTransactionSummary(userID uint, query dto.TransactionSummaryQueryParam) (dto.TransactionSummaryData, error) {
+	if query.Period == "" {
+		query.Period = time.Now().Format("2006-01")
+	}
+
 	summary, err := uc.TransactionRepo.SummarizeByPeriod(models.TransactionWhere{
 		UserID: userID,
 		Period: query.Period,

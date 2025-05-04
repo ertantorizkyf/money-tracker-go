@@ -21,31 +21,33 @@ func NewTransactionRepository() *TransactionRepository {
 	}
 }
 
-func constructTransactionWhereCondition(query *gorm.DB, whereCondition models.TransactionWhere) {
+func constructTransactionWhereCondition(query *gorm.DB, whereCondition models.TransactionWhere) *gorm.DB {
 	if whereCondition.UserID > 0 {
-		query.Where("user_id = ?", whereCondition.UserID)
+		query = query.Where("user_id = ?", whereCondition.UserID)
 	}
 	if whereCondition.SourceID > 0 {
-		query.Where("source_id = ?", whereCondition.SourceID)
+		query = query.Where("source_id = ?", whereCondition.SourceID)
 	}
 	if whereCondition.CategoryID > 0 {
-		query.Where("category_id = ?", whereCondition.CategoryID)
+		query = query.Where("category_id = ?", whereCondition.CategoryID)
 	}
 	if whereCondition.Purpose != "" {
-		query.Where("purpose = ?", whereCondition.Purpose)
+		query = query.Where("purpose = ?", whereCondition.Purpose)
 	}
 	if whereCondition.Remark != "" {
-		query.Where("remark = ?", whereCondition.Remark)
+		query = query.Where("remark = ?", whereCondition.Remark)
 	}
 	if whereCondition.StartDate != "" && whereCondition.EndDate != "" {
 		startDate, _ := time.Parse("2006-01-02", whereCondition.StartDate)
 		endDate, _ := time.Parse("2006-01-02", whereCondition.EndDate)
 
-		query.Where("trx_date BETWEEN ? AND ?", startDate, endDate)
+		query = query.Where("trx_date BETWEEN ? AND ?", startDate, endDate)
 	}
 	if whereCondition.Type != "" {
-		query.Where("type = ?", whereCondition.Type)
+		query = query.Where("type = ?", whereCondition.Type)
 	}
+
+	return query
 }
 
 func (r *TransactionRepository) GetAll(whereCondition models.TransactionWhere) ([]models.Transaction, error) {
@@ -53,10 +55,9 @@ func (r *TransactionRepository) GetAll(whereCondition models.TransactionWhere) (
 
 	query := r.DB
 
-	constructTransactionWhereCondition(query, whereCondition)
+	query = constructTransactionWhereCondition(query, whereCondition)
 
-	err := query.Find(&transactions).Error
-	if err != nil {
+	if err := query.Find(&transactions).Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
@@ -76,16 +77,16 @@ func (r *TransactionRepository) SummarizeByPeriod(whereCondition models.Transact
 	}
 	endDate := startDate.AddDate(0, 1, 0).Add(-time.Nanosecond)
 
-	err = r.DB.
+	query := r.DB.
 		Model(&models.Transaction{}).
 		Select(`
 			? AS period,
 			COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) AS income_amount,
 			COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS expense_amount
 		`, period).
-		Where("user_id = ? AND trx_date BETWEEN ? AND ?", whereCondition.UserID, startDate, endDate).
-		Scan(&summary).Error
-	if err != nil {
+		Where("user_id = ? AND trx_date BETWEEN ? AND ?", whereCondition.UserID, startDate, endDate)
+
+	if err := query.Scan(&summary).Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return summary, err
 	}

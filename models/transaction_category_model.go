@@ -10,3 +10,7 @@ type TransactionCategory struct {
 func (TransactionCategory) TableName() string {
 	return "mt_transaction_categories"
 }
+
+type TransactionCategoryWhere struct {
+	Type string
+}

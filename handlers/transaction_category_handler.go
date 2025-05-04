@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
 	"github.com/ertantorizkyf/money-tracker-go/usecases"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,19 @@ func NewTransactionCategoryHandler(transactionCategoryUseCase *usecases.Transact
 }
 
 func (h *TransactionCategoryHandler) GetAllCategories(c *gin.Context) {
-	categories, err := h.TransactionCategoryUseCase.GetAllCategories()
+	query := dto.TransactionCategoryQueryParam{}
+	err := c.BindQuery(&query)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
+
+	categories, err := h.TransactionCategoryUseCase.GetAllCategories(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
 			http.StatusInternalServerError,

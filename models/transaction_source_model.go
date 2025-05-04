@@ -10,3 +10,7 @@ type TransactionSource struct {
 func (TransactionSource) TableName() string {
 	return "mt_transaction_sources"
 }
+
+type TransactionSourceWhere struct {
+	Type string
+}

@@ -15,13 +15,13 @@ func transactionRoutes(
 	transactionGroup := apiGroup.Group("/transactions", middlewares.AuthorizeUser)
 	{
 		// TRX SOURCE GROUP
-		transactionSourceGroup := apiGroup.Group("/sources")
+		transactionSourceGroup := transactionGroup.Group("/sources")
 		{
 			transactionSourceGroup.GET("/", transactionSourceHandler.GetAllSources)
 		}
 
 		// TRX CATEGORY GROUP
-		transactionCategoryGroup := apiGroup.Group("/categories")
+		transactionCategoryGroup := transactionGroup.Group("/categories")
 		{
 			transactionCategoryGroup.GET("/", transactionCategoryHandler.GetAllCategories)
 		}

@@ -113,7 +113,7 @@ func (h *TransactionHandler) GetTransactionSummary(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
 			http.StatusInternalServerError,
-			"Failed to get all transactions",
+			"Failed to get transaction summary",
 			true,
 			nil,
 		))
@@ -122,7 +122,7 @@ func (h *TransactionHandler) GetTransactionSummary(c *gin.Context) {
 
 	c.JSON(http.StatusOK, dto.SetGeneralResp(
 		http.StatusOK,
-		"Successfully get all transactions",
+		"Successfully get transaction summary",
 		false,
 		transactions,
 	))

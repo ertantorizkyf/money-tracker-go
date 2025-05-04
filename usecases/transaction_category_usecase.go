@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"github.com/ertantorizkyf/money-tracker-go/constants"
+	"github.com/ertantorizkyf/money-tracker-go/dto"
 	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/ertantorizkyf/money-tracker-go/models"
 	"github.com/ertantorizkyf/money-tracker-go/repositories"
@@ -17,8 +18,10 @@ func NewTransactionCategoryUsecase(transactionCategoryRepo *repositories.Transac
 	}
 }
 
-func (uc *TransactionCategoryUseCase) GetAllCategories() ([]models.TransactionCategory, error) {
-	categories, err := uc.TransactionCategoryRepo.GetAll()
+func (uc *TransactionCategoryUseCase) GetAllCategories(query dto.TransactionCategoryQueryParam) ([]models.TransactionCategory, error) {
+	categories, err := uc.TransactionCategoryRepo.GetAll(models.TransactionCategoryWhere{
+		Type: query.Type,
+	})
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err

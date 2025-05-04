@@ -14,6 +14,14 @@ type TransactionSummaryQueryParam struct {
 	Period string `json:"period" form:"period"`
 }
 
+type TransactionCategoryQueryParam struct {
+	Type string `json:"type" form:"type"`
+}
+
+type TransactionSourceQueryParam struct {
+	Type string `json:"type" form:"type"`
+}
+
 type TransactionSummaryData struct {
 	Period        string  `json:"period"`
 	IncomeAmount  float64 `json:"income_amount"`
