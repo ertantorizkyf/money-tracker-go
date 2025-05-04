@@ -34,6 +34,7 @@ The project is organized as follows:
 ├── LICENSE # App license info
 ├── main.go # App entry point
 ├── makefile # Command shortcuts
+├── money_tracker.postman_collection.json # Postman API collection
 └── README.md # Project documentation
 ```
 
@@ -88,6 +89,7 @@ make up
 ## Documentation
 
 1. DB schemas can be viewed under the `erd.puml` file
+2. API collection can be viewed under the `money_tracker.postman_collection.json` file
 
 ## License
 
