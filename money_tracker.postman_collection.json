@@ -1,0 +1,266 @@
+{
+	"info": {
+		"_postman_id": "4491d986-8699-4f8e-970a-fc38a3ee9ecd",
+		"name": "Money Tracker API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43483000"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"John Doe\",\r\n    \"username\": \"johndoe\",\r\n    \"email\": \"johndoe@somemail.com\",\r\n    \"phone\": \"62812800900\",\r\n    \"dob\": \"2000-01-01\",\r\n    \"password\": \"moneyTracker_secretPass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/users/register",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username_or_email\": \"johndoe\",\r\n    \"password\": \"moneyTracker_secretPass\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/users/login",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Categories",
+					"item": [
+						{
+							"name": "Get Transaction Categories",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5kb2VAc29tZW1haWwuY29tIiwiZXhwIjoxNzQ2NDYwMzk4LCJzdWIiOjEsInVzZXJuYW1lIjoiam9obmRvZSJ9.rPhcB-RCTEG03RRzWKuJi66Sq3XEAIbv1375-dU7k1w",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{money_tracker_base_url}}/api/transactions/categories?type=expense",
+									"host": [
+										"{{money_tracker_base_url}}"
+									],
+									"path": [
+										"api",
+										"transactions",
+										"categories"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "expense"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Sources",
+					"item": [
+						{
+							"name": "Get Transaction Sources",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5kb2VAc29tZW1haWwuY29tIiwiZXhwIjoxNzQ2NDYwMzk4LCJzdWIiOjEsInVzZXJuYW1lIjoiam9obmRvZSJ9.rPhcB-RCTEG03RRzWKuJi66Sq3XEAIbv1375-dU7k1w",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{money_tracker_base_url}}/api/transactions/sources?type=expense",
+									"host": [
+										"{{money_tracker_base_url}}"
+									],
+									"path": [
+										"api",
+										"transactions",
+										"sources"
+									],
+									"query": [
+										{
+											"key": "type",
+											"value": "expense"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All Transactions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5kb2VAc29tZW1haWwuY29tIiwiZXhwIjoxNzQ2NDYwMzk4LCJzdWIiOjEsInVzZXJuYW1lIjoiam9obmRvZSJ9.rPhcB-RCTEG03RRzWKuJi66Sq3XEAIbv1375-dU7k1w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/transactions?source_id=1&category_id=1&purpose=lorem ipsum&remark=lorem ipsum&start_date=2025-05-01&end_date=2025-05-01&type=income",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"transactions"
+							],
+							"query": [
+								{
+									"key": "source_id",
+									"value": "1"
+								},
+								{
+									"key": "category_id",
+									"value": "1"
+								},
+								{
+									"key": "purpose",
+									"value": "lorem ipsum"
+								},
+								{
+									"key": "remark",
+									"value": "lorem ipsum"
+								},
+								{
+									"key": "start_date",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "end_date",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "type",
+									"value": "income"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5kb2VAc29tZW1haWwuY29tIiwiZXhwIjoxNzQ2NDYwMzk4LCJzdWIiOjEsInVzZXJuYW1lIjoiam9obmRvZSJ9.rPhcB-RCTEG03RRzWKuJi66Sq3XEAIbv1375-dU7k1w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/transactions/summary?period=2025-05",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"summary"
+							],
+							"query": [
+								{
+									"key": "period",
+									"value": "2025-05"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PING",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{money_tracker_base_url}}/ping",
+					"host": [
+						"{{money_tracker_base_url}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
