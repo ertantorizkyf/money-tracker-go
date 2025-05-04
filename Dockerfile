@@ -20,7 +20,7 @@ RUN go mod download
 
 # Copy code and environment
 COPY . .
-COPY .env.backup .env
+COPY .env .env
 
 # Build the Go application
 RUN go build -o main .
