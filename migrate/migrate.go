@@ -16,4 +16,6 @@ func main() {
 	migrations.CreateTransactionCategoriesTable(initializers.DB)
 	migrations.CreateTransactionSourcesTable(initializers.DB)
 	migrations.CreateTransactionsTable(initializers.DB)
+	migrations.SeedTransactionCategoriesTable(initializers.DB)
+	migrations.SeedTransactionSourcesTable(initializers.DB)
 }
