@@ -6,7 +6,9 @@ This is a Golang (Gin) BE application that helps you track your spending and und
 
 ## Highlight
 
-1. TBC
+1. View Transaction List with Filters
+2. Insert Transaction Data
+3. View Transaction Summary by Period
 
 ## Project Structure
 
@@ -14,6 +16,8 @@ The project is organized as follows:
 
 ```
 ├── assets/ # Contain files for bufio scanner (notably the common password validation)
+├── constants/ # Contain shared constant values used across the project
+├── docs/ # Contain the project documentations (such as postman and erd)
 ├── dto/ # Defines data transfer objects
 ├── handlers/ # Functions to process HTTP requests and responses
 ├── helpers/ # Utility functions and general purpose code used across the app
@@ -28,13 +32,11 @@ The project is organized as follows:
 ├── .env.backup # Example environment variables file
 ├── .gitignore # Files and directories to ignore in Git
 ├── Dockerfile # Docker image build specifications
-├── erd.puml # ERD visualization
 ├── go.mod # Go modules file
 ├── go.sum # Go checksum file
 ├── LICENSE # App license info
 ├── main.go # App entry point
 ├── makefile # Command shortcuts
-├── money_tracker.postman_collection.json # Postman API collection
 └── README.md # Project documentation
 ```
 
