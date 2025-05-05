@@ -1,0 +1,28 @@
+@startuml Login Sequence
+
+actor "Client" as client
+participant "Money Tracker Go" as server
+database "MySQL" as db
+
+client --> server : POST /api/login
+server --> server : validate input
+note right
+  email and password validation similar to register
+  commonly used password validation excluded from the validation
+end note
+alt input is invalid
+  server --> client : error response
+end
+server --> db : get user by email
+db --> server : user data response
+alt user is null
+  server --> client : error response
+end
+server --> server : compare hashed user password with request password
+alt password does not match
+  server --> client : error response
+end
+server --> server : generate jwt
+server --> client : success response
+
+@enduml

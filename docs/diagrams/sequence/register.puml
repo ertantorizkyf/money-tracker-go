@@ -1,0 +1,27 @@
+@startuml Register Sequence
+
+actor "Client" as client
+participant "Money Tracker Go" as server
+database "MySQL" as db
+
+client --> server : POST /api/register
+server --> server : validate input
+note right
+  email must be valid email format
+  phone must starts with non zero number (assumed country code)
+  dob must be yyyy-mm-dd format
+  username must be alphanumeric between 3-30 characters
+  password must be alphanumeric/special characters with no whitespace between 8-30 characters
+  password can't be commonly used password
+end note
+alt input is invalid
+  server --> client : error response
+end
+server --> server : hash password
+server --> server : construct user data
+server --> db : insert user
+db --> server : success response
+server --> server : generate jwt
+server --> client : success response
+
+@enduml
