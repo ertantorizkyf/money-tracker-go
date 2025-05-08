@@ -9,6 +9,7 @@ import (
 	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/ertantorizkyf/money-tracker-go/models"
 	"github.com/ertantorizkyf/money-tracker-go/repositories"
+	"gorm.io/gorm"
 )
 
 type TransactionUseCase struct {
@@ -39,6 +40,9 @@ func (uc *TransactionUseCase) GetAllTransactions(userID uint, query dto.Transact
 		StartDate:  query.StartDate,
 		EndDate:    query.EndDate,
 		Type:       query.Type,
+	}, models.TransactionPreload{
+		IncludeSource:   true,
+		IncludeCategory: true,
 	})
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
@@ -65,32 +69,36 @@ func (uc *TransactionUseCase) GetTransactionSummary(userID uint, query dto.Trans
 	return summary, nil
 }
 
-func (uc *TransactionUseCase) CreateTransaction(userID uint, req dto.CreateTransactionRequest) error {
+func (uc *TransactionUseCase) CreateTransaction(userID uint, req dto.CreateTransactionRequest) (*models.Transaction, error) {
 	if req.TrxDate == "" {
 		req.TrxDate = time.Now().Format("2006-01-02")
 	}
 
+	// GET CATEGORY
 	category, err := uc.TransactionCategoryRepo.GetByID(req.CategoryID)
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
-		return err
+		return nil, err
 	}
 
+	// GET SOURCE
 	source, err := uc.TransactionSourceRepo.GetByID(req.SourceID)
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
-		return err
+		return nil, err
 	}
 
+	// VALIDATE REQ TYPE
 	if req.Type != category.Type || req.Type != source.Type || category.Type != source.Type {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE)
-		return fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE)
+		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE)
 	}
 
+	// CONSTRUCT TRANSACTION
 	trxDate, err := time.Parse("2006-01-02", req.TrxDate)
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
-		return err
+		return nil, err
 	}
 
 	transaction := models.Transaction{
@@ -103,10 +111,72 @@ func (uc *TransactionUseCase) CreateTransaction(userID uint, req dto.CreateTrans
 		Purpose:    req.Purpose,
 		Remark:     req.Remark,
 	}
+
+	// CREATE TRANSACTION
 	if err := uc.TransactionRepo.CreateTransaction(transaction); err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &transaction, nil
+}
+
+func (uc *TransactionUseCase) UpdateTransaction(userID uint, trxID uint, req dto.UpdateTransactionRequest) (*models.Transaction, error) {
+	if req.TrxDate == "" {
+		req.TrxDate = time.Now().Format("2006-01-02")
+	}
+
+	// GET TRANSACTION BY ID
+	transaction, err := uc.TransactionRepo.GetByID(trxID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+	if (err != nil && err == gorm.ErrRecordNotFound) || transaction.UserID != userID {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_RECORD_NOT_FOUND)
+		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_RECORD_NOT_FOUND)
+	}
+
+	// GET CATEGORY
+	category, err := uc.TransactionCategoryRepo.GetByID(req.CategoryID)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+
+	// GET SOURCE
+	source, err := uc.TransactionSourceRepo.GetByID(req.SourceID)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+
+	// VALIDATE REQ TYPE
+	if req.Type != category.Type || req.Type != source.Type || category.Type != source.Type {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE)
+		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE)
+	}
+
+	// CONSTRUCT TRANSACTION
+	trxDate, err := time.Parse("2006-01-02", req.TrxDate)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+
+	transaction.TrxDate = trxDate
+	transaction.Type = req.Type
+	transaction.SourceID = req.SourceID
+	transaction.CategoryID = req.CategoryID
+	transaction.Amount = req.Amount
+	transaction.Purpose = req.Purpose
+	transaction.Remark = req.Remark
+
+	// UPDATE TRANSACTION
+	if err := uc.TransactionRepo.UpdateTransaction(transaction); err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+
+	return &transaction, nil
 }

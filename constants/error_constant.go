@@ -7,4 +7,5 @@ const (
 	ERR_MESSAGE_INVALID_CREDENTIALS      string = "Invalid credentials"
 	ERR_MESSAGE_UNAUTHORIZED             string = "Unauthorized"
 	ERR_MESSAGE_INVALID_TRANSACTION_TYPE string = "Invalid transaction type"
+	ERR_MESSAGE_RECORD_NOT_FOUND         string = "Record not found"
 )

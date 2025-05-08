@@ -24,6 +24,16 @@ type CreateTransactionRequest struct {
 	Remark     string  `json:"remark"`
 }
 
+type UpdateTransactionRequest struct {
+	TrxDate    string  `json:"trx_date"`
+	Type       string  `json:"type"`
+	SourceID   uint    `json:"source_id"`
+	CategoryID uint    `json:"category_id"`
+	Amount     float64 `json:"amount"`
+	Purpose    string  `json:"purpose"`
+	Remark     string  `json:"remark"`
+}
+
 type TransactionCategoryQueryParam struct {
 	Type string `json:"type" form:"type"`
 }

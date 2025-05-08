@@ -20,9 +20,9 @@ type Transaction struct {
 	UpdatedAt  time.Time      `json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 
-	User     User                `json:"user,omitempty"`
-	Source   TransactionSource   `gorm:"foreignKey:SourceID" json:"source,omitempty"`
-	Category TransactionCategory `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
+	User     *User                `gorm:"foreignKey:SourceID" json:"user,omitempty"`
+	Source   *TransactionSource   `gorm:"foreignKey:SourceID" json:"source,omitempty"`
+	Category *TransactionCategory `gorm:"foreignKey:CategoryID" json:"category,omitempty"`
 }
 
 func (Transaction) TableName() string {
@@ -39,4 +39,10 @@ type TransactionWhere struct {
 	EndDate    string
 	Type       string
 	Period     string
+}
+
+type TransactionPreload struct {
+	IncludeUser     bool
+	IncludeSource   bool
+	IncludeCategory bool
 }

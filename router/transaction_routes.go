@@ -29,6 +29,7 @@ func transactionRoutes(
 		// TRX GROUP
 		transactionGroup.GET("/", transactionHandler.GetAllTransactions)
 		transactionGroup.POST("/", transactionHandler.CreateTransaction)
+		transactionGroup.PATCH("/:id", transactionHandler.UpdateTransaction)
 		transactionGroup.GET("/summary", transactionHandler.GetTransactionSummary)
 	}
 }

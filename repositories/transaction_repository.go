@@ -50,12 +50,27 @@ func constructTransactionWhereCondition(query *gorm.DB, whereCondition models.Tr
 	return query
 }
 
-func (r *TransactionRepository) GetAll(whereCondition models.TransactionWhere) ([]models.Transaction, error) {
+func constructTransactionPreload(query *gorm.DB, preload models.TransactionPreload) *gorm.DB {
+	if preload.IncludeUser {
+		query = query.Preload("User")
+	}
+	if preload.IncludeCategory {
+		query = query.Preload("Category")
+	}
+	if preload.IncludeSource {
+		query = query.Preload("Source")
+	}
+
+	return query
+}
+
+func (r *TransactionRepository) GetAll(whereCondition models.TransactionWhere, preload models.TransactionPreload) ([]models.Transaction, error) {
 	var transactions []models.Transaction
 
 	query := r.DB
 
 	query = constructTransactionWhereCondition(query, whereCondition)
+	query = constructTransactionPreload(query, preload)
 
 	if err := query.Find(&transactions).Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
@@ -63,6 +78,19 @@ func (r *TransactionRepository) GetAll(whereCondition models.TransactionWhere) (
 	}
 
 	return transactions, nil
+}
+
+func (r *TransactionRepository) GetByID(id uint) (models.Transaction, error) {
+	var transaction models.Transaction
+
+	query := r.DB.Where("id = ?", id)
+
+	if err := query.First(&transaction).Error; err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return transaction, err
+	}
+
+	return transaction, nil
 }
 
 func (r *TransactionRepository) SummarizeByPeriod(whereCondition models.TransactionWhere) (dto.TransactionSummaryData, error) {
@@ -106,6 +134,34 @@ func (r *TransactionRepository) CreateTransaction(transaction models.Transaction
 	}()
 
 	err := tx.Create(&transaction).Error
+	if err != nil {
+		tx.Rollback()
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r *TransactionRepository) UpdateTransaction(transaction models.Transaction) error {
+	tx := r.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	err := tx.Model(&models.Transaction{}).
+		Where("id = ?", transaction.ID).
+		Updates(&transaction).Error
 	if err != nil {
 		tx.Rollback()
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)

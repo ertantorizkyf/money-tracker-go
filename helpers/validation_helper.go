@@ -185,3 +185,20 @@ func ValidateCreateTransactionSummaryRequest(req dto.CreateTransactionRequest) (
 
 	return true, ""
 }
+
+func ValidateUpdateTransactionSummaryRequest(req dto.UpdateTransactionRequest) (bool, string) {
+	// TYPE MUST BE "income" OR "expense"
+	if req.Type != constants.TRANSACTION_TYPE_INCOME && req.Type != constants.TRANSACTION_TYPE_EXPENSE {
+		return false, "Invalid transaction type"
+	}
+
+	// TRX DATE MUST BE YYYY-MM-DD
+	if req.TrxDate != "" {
+		_, err := time.Parse("2006-01-02", req.TrxDate)
+		if err != nil {
+			return false, "Invalid transaction date"
+		}
+	}
+
+	return true, ""
+}

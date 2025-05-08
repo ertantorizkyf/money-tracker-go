@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/ertantorizkyf/money-tracker-go/constants"
@@ -165,7 +166,8 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	if err := h.TransactionUseCase.CreateTransaction(userID.(uint), req); err != nil {
+	transaction, err := h.TransactionUseCase.CreateTransaction(userID.(uint), req)
+	if err != nil {
 		statusCode := http.StatusInternalServerError
 		errMessage := "Failed to create transaction"
 		if strings.Contains(err.Error(), constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE) {
@@ -182,10 +184,88 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dto.SetGeneralResp(
+	c.JSON(http.StatusCreated, dto.SetGeneralResp(
 		http.StatusCreated,
 		"Successfully created transaction",
 		false,
-		nil,
+		*transaction,
+	))
+}
+
+func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
+
+	req := dto.UpdateTransactionRequest{}
+	err = c.Bind(&req)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
+
+	isQueryParamValid, message := helpers.ValidateUpdateTransactionSummaryRequest(req)
+	if !isQueryParamValid {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			message,
+			true,
+			nil,
+		))
+		return
+	}
+
+	// GET USER ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, dto.SetGeneralResp(
+			http.StatusUnauthorized,
+			constants.ERR_MESSAGE_UNAUTHORIZED,
+			true,
+			nil,
+		))
+		return
+	}
+
+	transaction, err := h.TransactionUseCase.UpdateTransaction(userID.(uint), uint(id), req)
+	if err != nil {
+		statusCode := http.StatusInternalServerError
+		errMessage := "Failed to update transaction"
+		if strings.Contains(err.Error(), constants.ERR_MESSAGE_INVALID_TRANSACTION_TYPE) {
+			statusCode = http.StatusBadRequest
+			errMessage = constants.ERR_MESSAGE_BAD_REQUEST
+		}
+		if strings.Contains(err.Error(), constants.ERR_MESSAGE_RECORD_NOT_FOUND) {
+			statusCode = http.StatusNotFound
+			errMessage = constants.ERR_MESSAGE_RECORD_NOT_FOUND
+		}
+
+		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
+			statusCode,
+			errMessage,
+			true,
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusOK, dto.SetGeneralResp(
+		http.StatusOK,
+		"Successfully updated transaction",
+		false,
+		*transaction,
 	))
 }
