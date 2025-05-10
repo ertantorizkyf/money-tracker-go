@@ -112,7 +112,7 @@ func (r *TransactionRepository) GetByUserAndID(userID uint, id uint) (models.Tra
 	return transaction, nil
 }
 
-func (r *TransactionRepository) SummarizeByPeriod(whereCondition models.TransactionWhere) (dto.TransactionSummaryData, error) {
+func (r *TransactionRepository) GetSummaryByPeriod(whereCondition models.TransactionWhere) (dto.TransactionSummaryData, error) {
 	var summary dto.TransactionSummaryData
 	period := whereCondition.Period
 	summary.Period = period

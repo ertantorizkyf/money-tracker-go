@@ -57,7 +57,7 @@ func (uc *TransactionUseCase) GetTransactionSummary(userID uint, query dto.Trans
 		query.Period = time.Now().Format("2006-01")
 	}
 
-	summary, err := uc.TransactionRepo.SummarizeByPeriod(models.TransactionWhere{
+	summary, err := uc.TransactionRepo.GetSummaryByPeriod(models.TransactionWhere{
 		UserID: userID,
 		Period: query.Period,
 	})
