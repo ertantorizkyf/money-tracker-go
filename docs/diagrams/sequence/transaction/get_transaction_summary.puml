@@ -3,6 +3,7 @@
 actor "Client" as client
 participant "Money Tracker Go" as server
 database "MySQL" as db
+database "Redis" as redis
 
 client --> server : GET /api/transactions/summary
 server --> server : validate query param
@@ -12,8 +13,16 @@ end note
 alt query param is invalid
   server --> client : error response
 end
-server --> db : query income and expense transaction \nsum based on user and period
-db --> server : transaction summary data response
-server --> client : success response with data
+server --> redis : HMGET income and expense transaction \nsummary based on user and period
+redis --> server : transaction summary data response
+alt transaction redis data is not null
+  server --> client : success response with data
+else transaction redis data is null
+  server --> db : query income and expense transaction \nsummary based on user and period
+  db --> server : transaction summary data response
+  server --> redis : HMSET income and expense transaction \nsummary based on user and period
+  redis --> server : OK response
+  server --> client : success response with data
+end
 
 @enduml

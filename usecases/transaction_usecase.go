@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -16,17 +17,20 @@ type TransactionUseCase struct {
 	TransactionRepo         *repositories.TransactionRepository
 	TransactionCategoryRepo *repositories.TransactionCategoryRepository
 	TransactionSourceRepo   *repositories.TransactionSourceRepository
+	TransactionRedisRepo    *repositories.TransactionRedisRepository
 }
 
 func NewTransactionUsecase(
 	transactionRepo *repositories.TransactionRepository,
 	transactionCategoryRepo *repositories.TransactionCategoryRepository,
 	transactionSourceRepo *repositories.TransactionSourceRepository,
+	transactionRedisRepo *repositories.TransactionRedisRepository,
 ) *TransactionUseCase {
 	return &TransactionUseCase{
 		TransactionRepo:         transactionRepo,
 		TransactionCategoryRepo: transactionCategoryRepo,
 		TransactionSourceRepo:   transactionSourceRepo,
+		TransactionRedisRepo:    transactionRedisRepo,
 	}
 }
 
@@ -52,15 +56,34 @@ func (uc *TransactionUseCase) GetAllTransactions(userID uint, query dto.Transact
 	return transactions, nil
 }
 
-func (uc *TransactionUseCase) GetTransactionSummary(userID uint, query dto.TransactionSummaryQueryParam) (dto.TransactionSummaryData, error) {
+func (uc *TransactionUseCase) GetTransactionSummary(ctx context.Context, userID uint, query dto.TransactionSummaryQueryParam) (dto.TransactionSummaryData, error) {
 	if query.Period == "" {
 		query.Period = time.Now().Format("2006-01")
 	}
 
-	summary, err := uc.TransactionRepo.GetSummaryByPeriod(models.TransactionWhere{
+	// CHECK REDIS EXISTENCE
+	hasRedis, summary, err := uc.TransactionRedisRepo.GetSummaryByUserAndPeriod(ctx, userID, query.Period)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return summary, err
+	}
+
+	if hasRedis {
+		return summary, nil
+	}
+
+	// GET FROM DB IF REDIS DATA DOES NOT EXIST
+	summary, err = uc.TransactionRepo.GetSummaryByPeriod(models.TransactionWhere{
 		UserID: userID,
 		Period: query.Period,
 	})
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return summary, err
+	}
+
+	// SET TO REDIS
+	err = uc.TransactionRedisRepo.SetSummaryByUserAndPeriod(ctx, userID, query.Period, summary)
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return summary, err

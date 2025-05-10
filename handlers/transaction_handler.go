@@ -111,7 +111,7 @@ func (h *TransactionHandler) GetTransactionSummary(c *gin.Context) {
 		return
 	}
 
-	transactions, err := h.TransactionUseCase.GetTransactionSummary(userID.(uint), query)
+	transactions, err := h.TransactionUseCase.GetTransactionSummary(c, userID.(uint), query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
 			http.StatusInternalServerError,

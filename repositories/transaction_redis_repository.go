@@ -63,3 +63,19 @@ func (r *TransactionRedisRepository) GetSummaryByUserAndPeriod(ctx context.Conte
 
 	return true, response, nil
 }
+
+func (r *TransactionRedisRepository) SetSummaryByUserAndPeriod(ctx context.Context, userID uint, period string, summary dto.TransactionSummaryData) error {
+	key := fmt.Sprintf("user:%d:trx_summary:%s", userID, period)
+
+	fields := map[string]interface{}{
+		constants.TRANSACTION_TYPE_INCOME:  fmt.Sprintf("%.2f", summary.IncomeAmount),
+		constants.TRANSACTION_TYPE_EXPENSE: fmt.Sprintf("%.2f", summary.ExpenseAmount),
+	}
+
+	if err := r.RedisClient.HMSet(ctx, key, fields).Err(); err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
+}

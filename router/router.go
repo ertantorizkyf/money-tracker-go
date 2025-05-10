@@ -20,6 +20,7 @@ func SetupRouter() *gin.Engine {
 	transactionRepo := repositories.NewTransactionRepository()
 	transactionSourceRepo := repositories.NewTransactionSourceRepository()
 	transactionCategoryRepo := repositories.NewTransactionCategoryRepository()
+	transactionRedisRepo := repositories.NewTransactionRedisRepository()
 
 	// SETUP USECASES
 	userUseCase := usecases.NewUserUsecase(userRepo)
@@ -27,6 +28,7 @@ func SetupRouter() *gin.Engine {
 		transactionRepo,
 		transactionCategoryRepo,
 		transactionSourceRepo,
+		transactionRedisRepo,
 	)
 	transactionSourceUseCase := usecases.NewTransactionSourceUsecase(transactionSourceRepo)
 	transactionCategoryUseCase := usecases.NewTransactionCategoryUsecase(transactionCategoryRepo)
