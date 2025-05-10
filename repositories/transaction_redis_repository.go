@@ -79,3 +79,14 @@ func (r *TransactionRedisRepository) SetSummaryByUserAndPeriod(ctx context.Conte
 
 	return nil
 }
+
+func (r *TransactionRedisRepository) DeleteSummaryByUserAndPeriod(ctx context.Context, userID uint, period string) error {
+	key := fmt.Sprintf("user:%d:trx_summary:%s", userID, period)
+
+	if err := r.RedisClient.Del(ctx, key).Err(); err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
+}
