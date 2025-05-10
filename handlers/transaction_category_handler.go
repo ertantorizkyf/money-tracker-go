@@ -5,6 +5,7 @@ import (
 
 	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
+	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/ertantorizkyf/money-tracker-go/usecases"
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +25,17 @@ func (h *TransactionCategoryHandler) GetAllCategories(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
 			http.StatusBadRequest,
 			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
+
+	isTrxTypeValid, message := helpers.ValidateTrxType(query.Type)
+	if !isTrxTypeValid {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			message,
 			true,
 			nil,
 		))

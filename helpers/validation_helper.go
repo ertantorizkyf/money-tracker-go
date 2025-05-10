@@ -138,7 +138,21 @@ func ValidateLoginReq(req dto.LoginReq) (bool, string) {
 	return true, ""
 }
 
+func ValidateTrxType(trxType string) (bool, string) {
+	if trxType != constants.TRANSACTION_TYPE_INCOME && trxType != constants.TRANSACTION_TYPE_EXPENSE {
+		return false, "Invalid transaction type"
+	}
+
+	return true, ""
+}
+
 func ValidateTransactionQueryParam(query dto.TransactionQueryParam) (bool, string) {
+	// VALIDATE TRX TYPE
+	isTrxTypeValid, message := ValidateTrxType(query.Type)
+	if !isTrxTypeValid {
+		return false, message
+	}
+
 	// START DATE AND END DATE MUST BE YYYY-MM-DD
 	if query.StartDate != "" {
 		_, err := time.Parse("2006-01-02", query.StartDate)
@@ -154,8 +168,9 @@ func ValidateTransactionQueryParam(query dto.TransactionQueryParam) (bool, strin
 		}
 	}
 
+	// VALIDATE ORDER
 	if query.Order != "" {
-		if query.Order != "oldest" && query.Order != "newest" {
+		if query.Order != constants.TRANSACTION_ORDER_NEWEST && query.Order != constants.TRANSACTION_ORDER_OLDEST {
 			return false, "Invalid order"
 		}
 	}

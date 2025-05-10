@@ -64,6 +64,20 @@ func constructTransactionPreload(query *gorm.DB, preload models.TransactionPrelo
 	return query
 }
 
+func constructTransactionOrder(query *gorm.DB, order string) *gorm.DB {
+	if order != "" {
+		if order == constants.TRANSACTION_ORDER_OLDEST {
+			order = "trx_date ASC"
+		} else if order == constants.TRANSACTION_ORDER_NEWEST {
+			order = "trx_date DESC, created_at DESC"
+		}
+
+		query = query.Order(order)
+	}
+
+	return query
+}
+
 func (r *TransactionRepository) GetAll(
 	whereCondition models.TransactionWhere,
 	preload models.TransactionPreload,
@@ -75,15 +89,7 @@ func (r *TransactionRepository) GetAll(
 
 	query = constructTransactionWhereCondition(query, whereCondition)
 	query = constructTransactionPreload(query, preload)
-
-	if order != "" {
-		if order == "oldest" {
-			order = "trx_date ASC"
-		} else if order == "newest" {
-			order = "trx_date DESC, created_at DESC"
-		}
-		query = query.Order(order)
-	}
+	query = constructTransactionOrder(query, order)
 
 	if err := query.Find(&transactions).Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
