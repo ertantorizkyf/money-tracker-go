@@ -17,7 +17,7 @@ The project is organized as follows:
 ```
 ├── assets/ # Contain files for bufio scanner (notably the common password validation)
 ├── constants/ # Contain shared constant values used across the project
-├── docs/ # Contain the project documentations (such as postman and erd)
+├── docs/ # Contain the project documentations (such as postman collection, erd, and sequence diagram)
 ├── dto/ # Defines data transfer objects
 ├── handlers/ # Functions to process HTTP requests and responses
 ├── helpers/ # Utility functions and general purpose code used across the app
@@ -81,7 +81,7 @@ docker build -t money-tracker-go . && \
 - Using make:
 
 ```
-make up
+make start
 ```
 
 5. **The application should now be running (at port 3000 by default)**:
@@ -90,8 +90,9 @@ make up
 
 ## Documentation
 
-1. DB schemas can be viewed under the `erd.puml` file
-2. API collection can be viewed under the `money_tracker.postman_collection.json` file
+1. DB schemas can be viewed under the `./docs/diagrams/erd/` directory
+2. API collection can be viewed under the `./docs/postman/` directory
+3. Sequence diagrams can be viewed under `./docs/diagrams/sequence/` directory
 
 ## License
 
