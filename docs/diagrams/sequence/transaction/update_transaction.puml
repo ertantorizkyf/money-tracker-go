@@ -1,0 +1,28 @@
+@startuml Update Transaction
+
+actor "Client" as client
+participant "Money Tracker Go" as server
+database "MySQL" as db
+
+client --> server : POST /api/transactions
+server --> server : validate input
+note right
+  1. transaction type can only 
+  be income or expense
+  2. trx_date must 
+  be in YYYY-MM-DD format
+end note
+alt input is invalid
+  server --> client : error response
+end
+server --> db : get transaction by user and id
+db --> server : transaction data response
+alt transaction is null
+  server --> client : not found response
+end
+server --> server : construct update transaction data
+server --> db : update transaction to db
+db --> server : query success response
+server --> client : success response with data
+
+@enduml

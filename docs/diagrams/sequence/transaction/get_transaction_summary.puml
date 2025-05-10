@@ -1,4 +1,4 @@
-@startuml Get Transactions
+@startuml Get Transaction Summary
 
 actor "Client" as client
 participant "Money Tracker Go" as server

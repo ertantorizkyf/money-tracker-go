@@ -192,8 +192,9 @@ func ValidateTransactionSummaryQueryParam(query dto.TransactionSummaryQueryParam
 
 func ValidateCreateTransactionRequest(req dto.CreateTransactionRequest) (bool, string) {
 	// TYPE MUST BE "income" OR "expense"
-	if req.Type != constants.TRANSACTION_TYPE_INCOME && req.Type != constants.TRANSACTION_TYPE_EXPENSE {
-		return false, "Invalid transaction type"
+	isTrxTypeValid, message := ValidateTrxType(req.Type)
+	if !isTrxTypeValid {
+		return false, message
 	}
 
 	// TRX DATE MUST BE YYYY-MM-DD
@@ -209,8 +210,9 @@ func ValidateCreateTransactionRequest(req dto.CreateTransactionRequest) (bool, s
 
 func ValidateUpdateTransactionRequest(req dto.UpdateTransactionRequest) (bool, string) {
 	// TYPE MUST BE "income" OR "expense"
-	if req.Type != constants.TRANSACTION_TYPE_INCOME && req.Type != constants.TRANSACTION_TYPE_EXPENSE {
-		return false, "Invalid transaction type"
+	isTrxTypeValid, message := ValidateTrxType(req.Type)
+	if !isTrxTypeValid {
+		return false, message
 	}
 
 	// TRX DATE MUST BE YYYY-MM-DD

@@ -143,8 +143,8 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	isRequestParamValid, message := helpers.ValidateCreateTransactionRequest(req)
-	if !isRequestParamValid {
+	isRequestValid, message := helpers.ValidateCreateTransactionRequest(req)
+	if !isRequestValid {
 		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
 			http.StatusBadRequest,
 			message,
@@ -217,8 +217,8 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		return
 	}
 
-	isRequestParamValid, message := helpers.ValidateUpdateTransactionRequest(req)
-	if !isRequestParamValid {
+	isRequestValid, message := helpers.ValidateUpdateTransactionRequest(req)
+	if !isRequestValid {
 		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
 			http.StatusBadRequest,
 			message,
