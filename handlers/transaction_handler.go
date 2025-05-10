@@ -295,9 +295,9 @@ func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
 		return
 	}
 
-	if err := h.TransactionUseCase.DeleteTransaction(userID.(uint), uint(id)); err != nil {
+	if err := h.TransactionUseCase.DeleteTransaction(c, userID.(uint), uint(id)); err != nil {
 		statusCode := http.StatusInternalServerError
-		errMessage := "Failed to update transaction"
+		errMessage := "Failed to delete transaction"
 		if strings.Contains(err.Error(), constants.ERR_MESSAGE_RECORD_NOT_FOUND) {
 			statusCode = http.StatusNotFound
 			errMessage = constants.ERR_MESSAGE_RECORD_NOT_FOUND

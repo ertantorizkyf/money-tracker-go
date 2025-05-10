@@ -3,6 +3,7 @@
 actor "Client" as client
 participant "Money Tracker Go" as server
 database "MySQL" as db
+database "Redis" as redis
 
 client --> server : DELETE /api/transactions/:id
 server --> server : validate input
@@ -13,6 +14,8 @@ alt transaction is null
 end
 server --> db : soft delete transaction from db
 db --> server : query success response
+server --> redis : HDEL income and expense transaction \nsummary based on user and period
+redis --> server : OK response
 server --> client : no content response
 
 @enduml

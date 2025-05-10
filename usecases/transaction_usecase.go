@@ -239,9 +239,9 @@ func (uc *TransactionUseCase) UpdateTransaction(ctx context.Context, userID uint
 	return &transaction, nil
 }
 
-func (uc *TransactionUseCase) DeleteTransaction(userID uint, trxID uint) error {
+func (uc *TransactionUseCase) DeleteTransaction(ctx context.Context, userID uint, trxID uint) error {
 	// GET TRANSACTION BY ID
-	_, err := uc.TransactionRepo.GetByUserAndID(userID, trxID)
+	transaction, err := uc.TransactionRepo.GetByUserAndID(userID, trxID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return err
@@ -253,6 +253,13 @@ func (uc *TransactionUseCase) DeleteTransaction(userID uint, trxID uint) error {
 
 	// DELETE TRANSACTION
 	if err := uc.TransactionRepo.DeleteTransaction(trxID); err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	// WIPE SUMMARY
+	err = uc.wipeTransactionSummaryRedis(ctx, userID, transaction.TrxDate.Format("2006-01-02"))
+	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return err
 	}
