@@ -6,9 +6,10 @@ This is a Golang (Gin) BE application that helps you track your spending and und
 
 ## Highlight
 
-1. View Transaction List with Filters
-2. Insert, Update, and Delete Transaction Data
-3. View Transaction Summary by Period
+1. View transaction list with filters
+2. Insert, update, and Delete transaction data
+3. View transaction summary by period
+4. Redis implementation on transaction summary to improve reading performance
 
 ## Project Structure
 
@@ -47,6 +48,7 @@ Before running this project, you need to have the following installed:
 - **Go 1.23 or higher**: For running the Go application
 - **MySQL**: DB used by the app
 - **Docker**: To run the project as this project implements containerization
+- **Redis**: Redis used by the app for improving read performance on certain operation
 - **Make (Optional)**: To simplify common tasks by creating shortcuts
 - **PlantUML VSCode Extension (Optional)**: To view erd.puml file defined in this project
 
