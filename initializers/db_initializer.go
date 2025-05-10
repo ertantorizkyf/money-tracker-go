@@ -2,10 +2,11 @@ package initializers
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
+	"github.com/ertantorizkyf/money-tracker-go/constants"
+	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -35,8 +36,8 @@ func ConnectDB() {
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Printf("[ERR] Failed to connect to DB")
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, "[ERR] Failed to connect to DB")
 	} else {
-		log.Printf("[INFO] Connected to DB")
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_INFO, "[INFO] Connected to DB")
 	}
 }

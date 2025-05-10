@@ -1,9 +1,10 @@
 package initializers
 
 import (
-	"log"
 	"os"
 
+	"github.com/ertantorizkyf/money-tracker-go/constants"
+	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -13,9 +14,9 @@ func ConnectRedisClient() {
 	url := os.Getenv("REDIS_URL")
 	opts, err := redis.ParseURL(url)
 	if err != nil {
-		log.Printf("[ERR] Failed to connect to Redis")
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, "[ERR] Failed to connect to Redis")
 	} else {
-		log.Printf("[INFO] Connected to Redis")
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_INFO, "[INFO] Connected to Redis")
 	}
 
 	RedisClient = redis.NewClient(opts)

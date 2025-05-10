@@ -1,8 +1,8 @@
 package initializers
 
 import (
-	"log"
-
+	"github.com/ertantorizkyf/money-tracker-go/constants"
+	"github.com/ertantorizkyf/money-tracker-go/helpers"
 	"github.com/joho/godotenv"
 )
 
@@ -11,8 +11,8 @@ func LoadEnvVars() {
 	err := godotenv.Load()
 
 	if err != nil {
-		log.Printf("[ERR] Error loading .env file")
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, "[ERR] Error loading .env file")
 	} else {
-		log.Printf("[INFO] .env file loaded")
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_INFO, "[INFO] .env file loaded")
 	}
 }
