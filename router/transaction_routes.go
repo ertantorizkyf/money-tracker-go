@@ -30,6 +30,7 @@ func transactionRoutes(
 		transactionGroup.GET("/", transactionHandler.GetAllTransactions)
 		transactionGroup.POST("/", transactionHandler.CreateTransaction)
 		transactionGroup.PATCH("/:id", transactionHandler.UpdateTransaction)
+		transactionGroup.DELETE("/:id", transactionHandler.DeleteTransaction)
 		transactionGroup.GET("/summary", transactionHandler.GetTransactionSummary)
 	}
 }

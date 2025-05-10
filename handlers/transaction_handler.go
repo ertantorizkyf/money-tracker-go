@@ -143,8 +143,8 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	isQueryParamValid, message := helpers.ValidateCreateTransactionSummaryRequest(req)
-	if !isQueryParamValid {
+	isRequestParamValid, message := helpers.ValidateCreateTransactionSummaryRequest(req)
+	if !isRequestParamValid {
 		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
 			http.StatusBadRequest,
 			message,
@@ -217,8 +217,8 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		return
 	}
 
-	isQueryParamValid, message := helpers.ValidateUpdateTransactionSummaryRequest(req)
-	if !isQueryParamValid {
+	isRequestParamValid, message := helpers.ValidateUpdateTransactionSummaryRequest(req)
+	if !isRequestParamValid {
 		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
 			http.StatusBadRequest,
 			message,
@@ -267,5 +267,55 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		"Successfully updated transaction",
 		false,
 		*transaction,
+	))
+}
+
+func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+			http.StatusBadRequest,
+			constants.ERR_MESSAGE_BAD_REQUEST,
+			true,
+			nil,
+		))
+		return
+	}
+
+	// GET USER ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, dto.SetGeneralResp(
+			http.StatusUnauthorized,
+			constants.ERR_MESSAGE_UNAUTHORIZED,
+			true,
+			nil,
+		))
+		return
+	}
+
+	if err := h.TransactionUseCase.DeleteTransaction(userID.(uint), uint(id)); err != nil {
+		statusCode := http.StatusInternalServerError
+		errMessage := "Failed to update transaction"
+		if strings.Contains(err.Error(), constants.ERR_MESSAGE_RECORD_NOT_FOUND) {
+			statusCode = http.StatusNotFound
+			errMessage = constants.ERR_MESSAGE_RECORD_NOT_FOUND
+		}
+
+		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
+			statusCode,
+			errMessage,
+			true,
+			nil,
+		))
+		return
+	}
+
+	c.JSON(http.StatusNoContent, dto.SetGeneralResp(
+		http.StatusNoContent,
+		"Successfully deleted transaction",
+		false,
+		nil,
 	))
 }

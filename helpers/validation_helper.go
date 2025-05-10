@@ -154,6 +154,12 @@ func ValidateTransactionQueryParam(query dto.TransactionQueryParam) (bool, strin
 		}
 	}
 
+	if query.Order != "" {
+		if query.Order != "oldest" && query.Order != "newest" {
+			return false, "Invalid order"
+		}
+	}
+
 	return true, ""
 }
 

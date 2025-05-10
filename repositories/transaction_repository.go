@@ -64,13 +64,26 @@ func constructTransactionPreload(query *gorm.DB, preload models.TransactionPrelo
 	return query
 }
 
-func (r *TransactionRepository) GetAll(whereCondition models.TransactionWhere, preload models.TransactionPreload) ([]models.Transaction, error) {
+func (r *TransactionRepository) GetAll(
+	whereCondition models.TransactionWhere,
+	preload models.TransactionPreload,
+	order string,
+) ([]models.Transaction, error) {
 	var transactions []models.Transaction
 
 	query := r.DB
 
 	query = constructTransactionWhereCondition(query, whereCondition)
 	query = constructTransactionPreload(query, preload)
+
+	if order != "" {
+		if order == "oldest" {
+			order = "trx_date ASC"
+		} else if order == "newest" {
+			order = "trx_date DESC, created_at DESC"
+		}
+		query = query.Order(order)
+	}
 
 	if err := query.Find(&transactions).Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
@@ -162,6 +175,32 @@ func (r *TransactionRepository) UpdateTransaction(transaction models.Transaction
 	err := tx.Model(&models.Transaction{}).
 		Where("id = ?", transaction.ID).
 		Updates(&transaction).Error
+	if err != nil {
+		tx.Rollback()
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	if err = tx.Commit().Error; err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
+}
+
+func (r *TransactionRepository) DeleteTransaction(trxID uint) error {
+	tx := r.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	err := tx.Where("id = ?", trxID).Delete(&models.Transaction{}).Error
 	if err != nil {
 		tx.Rollback()
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)

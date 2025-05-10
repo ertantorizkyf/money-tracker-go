@@ -43,7 +43,7 @@ func (uc *TransactionUseCase) GetAllTransactions(userID uint, query dto.Transact
 	}, models.TransactionPreload{
 		IncludeSource:   true,
 		IncludeCategory: true,
-	})
+	}, query.Order)
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
@@ -179,4 +179,25 @@ func (uc *TransactionUseCase) UpdateTransaction(userID uint, trxID uint, req dto
 	}
 
 	return &transaction, nil
+}
+
+func (uc *TransactionUseCase) DeleteTransaction(userID uint, trxID uint) error {
+	// GET TRANSACTION BY ID
+	transaction, err := uc.TransactionRepo.GetByID(trxID)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+	if (err != nil && err == gorm.ErrRecordNotFound) || transaction.UserID != userID {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_RECORD_NOT_FOUND)
+		return fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_RECORD_NOT_FOUND)
+	}
+
+	// DELETE TRANSACTION
+	if err := uc.TransactionRepo.DeleteTransaction(trxID); err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
 }
