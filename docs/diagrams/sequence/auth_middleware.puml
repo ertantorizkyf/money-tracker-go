@@ -1,0 +1,21 @@
+@startuml Get Transaction Categories
+
+actor "Client" as client
+participant "Money Tracker Go" as server
+participant "Middleware" as middleware
+participant "Handler" as handler
+
+client --> server : send HTTP request
+server --> middleware : call auth middleware function
+middleware --> middleware : validate auth bearer token
+alt token is valid
+  middleware --> middleware : set verified token data to context
+  middleware --> handler : proceed to handler
+  handler --> server : return result
+  server --> client : success response
+else token is invalid
+  middleware --> server : reject auth
+  server --> client : error response
+end
+
+@enduml

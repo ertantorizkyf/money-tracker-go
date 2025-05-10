@@ -1,0 +1,19 @@
+@startuml Get Transaction Sources
+
+actor "Client" as client
+participant "Money Tracker Go" as server
+database "MySQL" as db
+
+client --> server : GET /api/transactions/sources
+server --> server : validate query param
+note right
+  transaction type can only be income or expense
+end note
+alt query param is invalid
+  server --> client : error response
+end
+server --> db : get all transaction sources by type
+db --> server : transaction sources data response
+server --> client : success response with data
+
+@enduml
