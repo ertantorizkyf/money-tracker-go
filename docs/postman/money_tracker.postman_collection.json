@@ -76,16 +76,6 @@
 						{
 							"name": "Get Transaction Categories",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "jwt_bearer_token",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -116,16 +106,6 @@
 						{
 							"name": "Get Transaction Sources",
 							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "jwt_bearer_token",
-											"type": "string"
-										}
-									]
-								},
 								"method": "GET",
 								"header": [],
 								"url": {
@@ -153,20 +133,10 @@
 				{
 					"name": "Get All Transactions",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "jwt_bearer_token",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{money_tracker_base_url}}/api/transactions?type=expense",
+							"raw": "{{money_tracker_base_url}}/api/transactions?type=expense&order=oldest",
 							"host": [
 								"{{money_tracker_base_url}}"
 							],
@@ -208,6 +178,10 @@
 								{
 									"key": "type",
 									"value": "expense"
+								},
+								{
+									"key": "order",
+									"value": "oldest"
 								}
 							]
 						}
@@ -217,16 +191,6 @@
 				{
 					"name": "Get Transaction Summary",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "jwt_bearer_token",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -252,21 +216,11 @@
 				{
 					"name": "Create Transaction",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "jwt_bearer_token",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"trx_date\": \"2025-05-03\",\r\n    \"type\": \"expense\",\r\n    \"source_id\": 3,\r\n    \"category_id\": 3,\r\n\t\"amount\": 200000,\r\n\t\"purpose\": \"Electric bills\",\r\n\t\"remark\": \"Paid via gopay app\"\r\n}",
+							"raw": "{\r\n    \"trx_date\": \"2025-05-08\",\r\n    \"type\": \"expense\",\r\n    \"source_id\": 3,\r\n    \"category_id\": 13,\r\n\t\"amount\": 10000000,\r\n\t\"purpose\": \"iPhone\",\r\n\t\"remark\": \"New iPhone bought on an offline store\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -281,6 +235,62 @@
 							"path": [
 								"api",
 								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Transaction",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"trx_date\": \"2025-05-03\",\r\n    \"type\": \"expense\",\r\n    \"source_id\": 3,\r\n    \"category_id\": 3,\r\n\t\"amount\": 300000,\r\n\t\"purpose\": \"Electric bills\",\r\n\t\"remark\": \"Paid via gopay app\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/transactions/1",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"trx_date\": \"2025-05-03\",\r\n    \"type\": \"expense\",\r\n    \"source_id\": 3,\r\n    \"category_id\": 3,\r\n\t\"amount\": 300000,\r\n\t\"purpose\": \"Electric bills\",\r\n\t\"remark\": \"Paid via gopay app\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{money_tracker_base_url}}/api/transactions/2",
+							"host": [
+								"{{money_tracker_base_url}}"
+							],
+							"path": [
+								"api",
+								"transactions",
+								"2"
 							]
 						}
 					},
@@ -304,6 +314,38 @@
 				}
 			},
 			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "xxx",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
