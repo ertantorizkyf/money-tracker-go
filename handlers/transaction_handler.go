@@ -166,7 +166,7 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 		return
 	}
 
-	transaction, err := h.TransactionUseCase.CreateTransaction(userID.(uint), req)
+	transaction, err := h.TransactionUseCase.CreateTransaction(c, userID.(uint), req)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		errMessage := "Failed to create transaction"
@@ -240,7 +240,7 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 		return
 	}
 
-	transaction, err := h.TransactionUseCase.UpdateTransaction(userID.(uint), uint(id), req)
+	transaction, err := h.TransactionUseCase.UpdateTransaction(c, userID.(uint), uint(id), req)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		errMessage := "Failed to update transaction"

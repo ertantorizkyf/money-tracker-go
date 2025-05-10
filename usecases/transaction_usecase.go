@@ -34,6 +34,27 @@ func NewTransactionUsecase(
 	}
 }
 
+// PRIVATE FUNCTIONS
+func (uc *TransactionUseCase) wipeTransactionSummaryRedis(ctx context.Context, userID uint, trxDate string) error {
+	// GET PERIOD
+	parsedDate, err := time.Parse("2006-01-02", trxDate)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+	period := parsedDate.Format("2006-01")
+
+	// WIPE SUMMARY
+	err = uc.TransactionRedisRepo.DeleteSummaryByUserAndPeriod(ctx, userID, period)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return err
+	}
+
+	return nil
+}
+
+// PUBLIC FUNCTIONS
 func (uc *TransactionUseCase) GetAllTransactions(userID uint, query dto.TransactionQueryParam) ([]models.Transaction, error) {
 	transactions, err := uc.TransactionRepo.GetAll(models.TransactionWhere{
 		UserID:     userID,
@@ -92,7 +113,7 @@ func (uc *TransactionUseCase) GetTransactionSummary(ctx context.Context, userID 
 	return summary, nil
 }
 
-func (uc *TransactionUseCase) CreateTransaction(userID uint, req dto.CreateTransactionRequest) (*models.Transaction, error) {
+func (uc *TransactionUseCase) CreateTransaction(ctx context.Context, userID uint, req dto.CreateTransactionRequest) (*models.Transaction, error) {
 	if req.TrxDate == "" {
 		req.TrxDate = time.Now().Format("2006-01-02")
 	}
@@ -141,10 +162,17 @@ func (uc *TransactionUseCase) CreateTransaction(userID uint, req dto.CreateTrans
 		return nil, err
 	}
 
+	// WIPE SUMMARY
+	err = uc.wipeTransactionSummaryRedis(ctx, userID, req.TrxDate)
+	if err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+
 	return &transaction, nil
 }
 
-func (uc *TransactionUseCase) UpdateTransaction(userID uint, trxID uint, req dto.UpdateTransactionRequest) (*models.Transaction, error) {
+func (uc *TransactionUseCase) UpdateTransaction(ctx context.Context, userID uint, trxID uint, req dto.UpdateTransactionRequest) (*models.Transaction, error) {
 	if req.TrxDate == "" {
 		req.TrxDate = time.Now().Format("2006-01-02")
 	}
@@ -197,6 +225,13 @@ func (uc *TransactionUseCase) UpdateTransaction(userID uint, trxID uint, req dto
 
 	// UPDATE TRANSACTION
 	if err := uc.TransactionRepo.UpdateTransaction(transaction); err != nil {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
+		return nil, err
+	}
+
+	// WIPE SUMMARY
+	err = uc.wipeTransactionSummaryRedis(ctx, userID, req.TrxDate)
+	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}

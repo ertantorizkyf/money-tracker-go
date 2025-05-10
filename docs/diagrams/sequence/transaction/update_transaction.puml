@@ -3,6 +3,7 @@
 actor "Client" as client
 participant "Money Tracker Go" as server
 database "MySQL" as db
+database "Redis" as redis
 
 client --> server : PATCH /api/transactions/:id
 server --> server : validate input
@@ -23,6 +24,8 @@ end
 server --> server : construct update transaction data
 server --> db : update transaction to db
 db --> server : query success response
+server --> redis : HDEL income and expense transaction \nsummary based on user and period
+redis --> server : OK response
 server --> client : success response with data
 
 @enduml
