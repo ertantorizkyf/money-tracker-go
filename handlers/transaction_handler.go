@@ -175,7 +175,7 @@ func (h *TransactionHandler) CreateTransaction(c *gin.Context) {
 			errMessage = constants.ERR_MESSAGE_BAD_REQUEST
 		}
 
-		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
+		c.JSON(statusCode, dto.SetGeneralResp(
 			statusCode,
 			errMessage,
 			true,
@@ -253,7 +253,7 @@ func (h *TransactionHandler) UpdateTransaction(c *gin.Context) {
 			errMessage = constants.ERR_MESSAGE_RECORD_NOT_FOUND
 		}
 
-		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
+		c.JSON(statusCode, dto.SetGeneralResp(
 			statusCode,
 			errMessage,
 			true,
@@ -303,7 +303,7 @@ func (h *TransactionHandler) DeleteTransaction(c *gin.Context) {
 			errMessage = constants.ERR_MESSAGE_RECORD_NOT_FOUND
 		}
 
-		c.JSON(http.StatusInternalServerError, dto.SetGeneralResp(
+		c.JSON(statusCode, dto.SetGeneralResp(
 			statusCode,
 			errMessage,
 			true,

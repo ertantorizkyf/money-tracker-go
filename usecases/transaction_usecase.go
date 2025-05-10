@@ -127,12 +127,12 @@ func (uc *TransactionUseCase) UpdateTransaction(userID uint, trxID uint, req dto
 	}
 
 	// GET TRANSACTION BY ID
-	transaction, err := uc.TransactionRepo.GetByID(trxID)
+	transaction, err := uc.TransactionRepo.GetByUserAndID(userID, trxID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
-	if (err != nil && err == gorm.ErrRecordNotFound) || transaction.UserID != userID {
+	if err != nil && err == gorm.ErrRecordNotFound {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_RECORD_NOT_FOUND)
 		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_RECORD_NOT_FOUND)
 	}
@@ -183,12 +183,12 @@ func (uc *TransactionUseCase) UpdateTransaction(userID uint, trxID uint, req dto
 
 func (uc *TransactionUseCase) DeleteTransaction(userID uint, trxID uint) error {
 	// GET TRANSACTION BY ID
-	transaction, err := uc.TransactionRepo.GetByID(trxID)
+	_, err := uc.TransactionRepo.GetByUserAndID(userID, trxID)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return err
 	}
-	if (err != nil && err == gorm.ErrRecordNotFound) || transaction.UserID != userID {
+	if err != nil && err == gorm.ErrRecordNotFound {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_RECORD_NOT_FOUND)
 		return fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_RECORD_NOT_FOUND)
 	}

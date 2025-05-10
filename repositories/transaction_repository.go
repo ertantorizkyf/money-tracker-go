@@ -99,10 +99,10 @@ func (r *TransactionRepository) GetAll(
 	return transactions, nil
 }
 
-func (r *TransactionRepository) GetByID(id uint) (models.Transaction, error) {
+func (r *TransactionRepository) GetByUserAndID(userID uint, id uint) (models.Transaction, error) {
 	var transaction models.Transaction
 
-	query := r.DB.Where("id = ?", id)
+	query := r.DB.Where("user_id = ?", userID).Where("id = ?", id)
 
 	if err := query.First(&transaction).Error; err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
