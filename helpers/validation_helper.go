@@ -175,7 +175,7 @@ func ValidateTransactionSummaryQueryParam(query dto.TransactionSummaryQueryParam
 	return true, ""
 }
 
-func ValidateCreateTransactionSummaryRequest(req dto.CreateTransactionRequest) (bool, string) {
+func ValidateCreateTransactionRequest(req dto.CreateTransactionRequest) (bool, string) {
 	// TYPE MUST BE "income" OR "expense"
 	if req.Type != constants.TRANSACTION_TYPE_INCOME && req.Type != constants.TRANSACTION_TYPE_EXPENSE {
 		return false, "Invalid transaction type"
@@ -192,7 +192,7 @@ func ValidateCreateTransactionSummaryRequest(req dto.CreateTransactionRequest) (
 	return true, ""
 }
 
-func ValidateUpdateTransactionSummaryRequest(req dto.UpdateTransactionRequest) (bool, string) {
+func ValidateUpdateTransactionRequest(req dto.UpdateTransactionRequest) (bool, string) {
 	// TYPE MUST BE "income" OR "expense"
 	if req.Type != constants.TRANSACTION_TYPE_INCOME && req.Type != constants.TRANSACTION_TYPE_EXPENSE {
 		return false, "Invalid transaction type"
