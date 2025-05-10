@@ -113,7 +113,7 @@ func (uc *TransactionUseCase) CreateTransaction(userID uint, req dto.CreateTrans
 	}
 
 	// CREATE TRANSACTION
-	if err := uc.TransactionRepo.CreateTransaction(transaction); err != nil {
+	if err := uc.TransactionRepo.CreateTransaction(&transaction); err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}

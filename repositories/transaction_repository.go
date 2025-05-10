@@ -141,7 +141,7 @@ func (r *TransactionRepository) SummarizeByPeriod(whereCondition models.Transact
 	return summary, nil
 }
 
-func (r *TransactionRepository) CreateTransaction(transaction models.Transaction) error {
+func (r *TransactionRepository) CreateTransaction(transaction *models.Transaction) error {
 	tx := r.DB.Begin()
 	if tx.Error != nil {
 		return tx.Error
@@ -152,7 +152,7 @@ func (r *TransactionRepository) CreateTransaction(transaction models.Transaction
 		}
 	}()
 
-	err := tx.Create(&transaction).Error
+	err := tx.Create(transaction).Error
 	if err != nil {
 		tx.Rollback()
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
