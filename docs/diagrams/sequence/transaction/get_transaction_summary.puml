@@ -1,20 +1,19 @@
-@startuml Get Transaction Categories
+@startuml Get Transactions
 
 actor "Client" as client
 participant "Money Tracker Go" as server
 database "MySQL" as db
 
-client --> server : GET /api/transactions/categories
+client --> server : GET /api/transactions/summary
 server --> server : validate query param
 note right
-  transaction type can only 
-  be income or expense
+  period param must be in YYYY-MM format
 end note
 alt query param is invalid
   server --> client : error response
 end
-server --> db : get all transaction categories by type
-db --> server : transaction categories data response
+server --> db : query income and expense transaction \nsum based on user and period
+db --> server : transaction summary data response
 server --> client : success response with data
 
 @enduml

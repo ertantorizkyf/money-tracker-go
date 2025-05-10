@@ -7,7 +7,8 @@ database "MySQL" as db
 client --> server : GET /api/transactions/sources
 server --> server : validate query param
 note right
-  transaction type can only be income or expense
+  transaction type can only 
+  be income or expense
 end note
 alt query param is invalid
   server --> client : error response

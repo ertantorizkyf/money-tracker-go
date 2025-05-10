@@ -7,12 +7,16 @@ database "MySQL" as db
 client --> server : POST /api/register
 server --> server : validate input
 note right
-  email must be valid email format
-  phone must starts with non zero number (assumed country code)
-  dob must be yyyy-mm-dd format
-  username must be alphanumeric between 3-30 characters
-  password must be alphanumeric/special characters with no whitespace between 8-30 characters
-  password can't be commonly used password
+  1. email must be valid email format
+  2. phone must starts with non zero number 
+  (assumed country code)
+  3. dob must be yyyy-mm-dd format
+  4. username must be alphanumeric 
+  between 3-30 characters
+  5. password must be alphanumeric/special 
+  characters with no whitespace 
+  between 8-30 characters
+  6. password can't be commonly used password
 end note
 alt input is invalid
   server --> client : error response

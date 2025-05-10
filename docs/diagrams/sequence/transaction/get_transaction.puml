@@ -1,0 +1,23 @@
+@startuml Get Transactions
+
+actor "Client" as client
+participant "Money Tracker Go" as server
+database "MySQL" as db
+
+client --> server : GET /api/transactions
+server --> server : validate query param
+note right
+  1. transaction type can only 
+  be income or expense
+  2. start_date and end_date must 
+  be in YYYY-MM-DD format
+  3. order can only be newest or oldest
+end note
+alt query param is invalid
+  server --> client : error response
+end
+server --> db : get all transactions based on user \nwith where condition, preload, and order
+db --> server : transactions data response
+server --> client : success response with data
+
+@enduml

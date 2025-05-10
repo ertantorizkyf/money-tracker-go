@@ -7,8 +7,10 @@ database "MySQL" as db
 client --> server : POST /api/login
 server --> server : validate input
 note right
-  email and password validation similar to register
-  commonly used password validation excluded from the validation
+  1. email and password validation 
+  similar to register
+  2. commonly used password validation 
+  excluded from the login validation
 end note
 alt input is invalid
   server --> client : error response
