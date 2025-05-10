@@ -7,7 +7,7 @@ This is a Golang (Gin) BE application that helps you track your spending and und
 ## Highlight
 
 1. View Transaction List with Filters
-2. Insert Transaction Data
+2. Insert, Update, and Delete Transaction Data
 3. View Transaction Summary by Period
 
 ## Project Structure
