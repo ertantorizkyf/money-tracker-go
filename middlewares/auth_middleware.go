@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RejectAuthorization(c *gin.Context) {
+func RejectAuth(c *gin.Context) {
 	helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_INVALID_CREDENTIALS)
 	c.JSON(http.StatusUnauthorized, dto.SetGeneralResp(
 		http.StatusUnauthorized,
@@ -21,31 +21,31 @@ func RejectAuthorization(c *gin.Context) {
 	c.Abort()
 }
 
-func AuthorizeUser(c *gin.Context) {
+func AuthMiddleware(c *gin.Context) {
 	authHeader := c.Request.Header.Get("Authorization")
 	if authHeader == "" {
-		RejectAuthorization(c)
+		RejectAuth(c)
 
 		return
 	}
 
 	authToken := strings.Split(authHeader, " ")
 	if len(authToken) < 2 {
-		RejectAuthorization(c)
+		RejectAuth(c)
 
 		return
 	}
 
 	claims, err := helpers.VerifyToken(authToken[1])
 	if err != nil {
-		RejectAuthorization(c)
+		RejectAuth(c)
 
 		return
 	}
 
 	subFloat, ok := claims["sub"].(float64)
 	if !ok {
-		RejectAuthorization(c)
+		RejectAuth(c)
 		return
 	}
 

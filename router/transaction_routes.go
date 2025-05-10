@@ -12,7 +12,7 @@ func transactionRoutes(
 	transactionSourceHandler *handlers.TransactionSourceHandler,
 	transactionCategoryHandler *handlers.TransactionCategoryHandler,
 ) {
-	transactionGroup := apiGroup.Group("/transactions", middlewares.AuthorizeUser)
+	transactionGroup := apiGroup.Group("/transactions", middlewares.AuthMiddleware)
 	{
 		// TRX SOURCE GROUP
 		transactionSourceGroup := transactionGroup.Group("/sources")
