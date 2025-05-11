@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"crypto/sha1"
 	"errors"
 	"fmt"
 	"time"
@@ -8,33 +9,47 @@ import (
 	"github.com/ertantorizkyf/money-tracker-go/constants"
 	"github.com/ertantorizkyf/money-tracker-go/dto"
 	"github.com/ertantorizkyf/money-tracker-go/helpers"
+	"github.com/ertantorizkyf/money-tracker-go/initializers"
 	"github.com/ertantorizkyf/money-tracker-go/models"
 	"github.com/ertantorizkyf/money-tracker-go/repositories"
 	"github.com/gin-gonic/gin"
+	"github.com/willf/bloom"
 	"gorm.io/gorm"
 )
 
 type UserUseCase struct {
-	UserRepo *repositories.UserRepository
+	BloomFilter *bloom.BloomFilter
+	UserRepo    *repositories.UserRepository
 }
 
 func NewUserUsecase(userRepo *repositories.UserRepository) *UserUseCase {
 	return &UserUseCase{
-		UserRepo: userRepo,
+		BloomFilter: initializers.BloomFilter,
+		UserRepo:    userRepo,
 	}
 }
 
 func (uc *UserUseCase) RegisterUser(c *gin.Context, req dto.RegisterReq) (*string, error) {
+	// VALIDATE PASSWORD HASH WITH BLOOM FILTER
+	sha1HashedPassword := sha1.Sum([]byte(req.Password))
+	if uc.BloomFilter.Test(sha1HashedPassword[:]) {
+		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_BAD_REQUEST))
+		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_BAD_REQUEST)
+	}
+
 	user, err := uc.UserRepo.GetFirst(models.UserWhere{
 		Username: req.Username,
-		Email:    req.Email,
-		Phone:    req.Phone,
+		OrEmail:  req.Email,
+		OrPhone:  req.Phone,
 	})
 
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return nil, err
 	}
+
+	fmt.Println("=== DEBUG ===")
+	fmt.Println(user)
 
 	if user.ID > 0 {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_DATA_TAKEN)

@@ -50,12 +50,17 @@ func (h *UserHandler) RegisterUser(c *gin.Context) {
 		statusCode := http.StatusInternalServerError
 		errMessage := constants.ERR_MESSAGE_INTERNAL_SERVER_ERROR
 
-		if err.Error() == constants.ERR_MESSAGE_DATA_TAKEN {
+		if strings.Contains(err.Error(), constants.ERR_MESSAGE_DATA_TAKEN) {
 			statusCode = http.StatusConflict
 			errMessage = constants.ERR_MESSAGE_DATA_TAKEN
 		}
 
-		c.JSON(http.StatusBadRequest, dto.SetGeneralResp(
+		if strings.Contains(err.Error(), constants.ERR_MESSAGE_BAD_REQUEST) {
+			statusCode = http.StatusBadRequest
+			errMessage = constants.ERR_MESSAGE_BAD_REQUEST
+		}
+
+		c.JSON(statusCode, dto.SetGeneralResp(
 			statusCode,
 			errMessage,
 			true,

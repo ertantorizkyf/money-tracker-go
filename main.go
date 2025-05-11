@@ -12,6 +12,7 @@ func init() {
 	initializers.LoadEnvVars()
 	initializers.ConnectDB()
 	initializers.ConnectRedisClient()
+	initializers.InitializeBloomFilter()
 }
 
 func main() {

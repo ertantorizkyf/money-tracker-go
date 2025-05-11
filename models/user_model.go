@@ -26,7 +26,10 @@ func (User) TableName() string {
 }
 
 type UserWhere struct {
-	Username string
-	Email    string
-	Phone    string
+	Username   string
+	Email      string
+	Phone      string
+	OrUsername string
+	OrEmail    string
+	OrPhone    string
 }

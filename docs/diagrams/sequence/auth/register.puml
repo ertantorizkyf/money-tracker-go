@@ -16,10 +16,16 @@ note right
   5. password must be alphanumeric/special 
   characters with no whitespace 
   between 8-30 characters
-  6. password can't be commonly used password
+  6. password can't be commonly used password 
+  (bloom filter implemented)
 end note
 alt input is invalid
   server --> client : error response
+end
+server --> db : get user based on email, password, username request
+db --> server : user data response 
+alt user exists
+  server --> client : conflict response
 end
 server --> server : hash password
 server --> server : construct user data

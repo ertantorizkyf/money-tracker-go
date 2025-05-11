@@ -1,11 +1,7 @@
 package helpers
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/ertantorizkyf/money-tracker-go/constants"
@@ -42,54 +38,7 @@ func IsPasswordValid(password string) bool {
 	// Password must be between 8 to 30 characters
 	passwordRegex := regexp.MustCompile(`^[a-zA-Z0-9!@#$%^&*()_\-+=\[\]{}|\\:;"'<>,.?/~` + "`" + `]{8,30}$`)
 
-	isValid := passwordRegex.MatchString(password)
-
-	// Can't be commonly used passwords
-	// * COMMON HASHES LIBRARY DITCHED BECAUSE OF SLOW PERFORMANCE: TESTED ~ >30 MINUTES TO CHECK ALL HASHES IN LIBRARY
-	// * Compared with hashed library in assets/common_password_libs_hashed.txt
-	// * commonHashes := make(map[string]struct{})
-	// Use plain common pass lib instead
-	commonPasswords := make(map[string]struct{})
-	filePath := os.Getenv("COMMON_PASS_LIB_PATH")
-	file, err := os.Open(filePath)
-	if err != nil {
-		isValid = false
-		LogWithSeverity("ERR", fmt.Sprintf("Failed to open file %s: %v", filePath, err))
-		return isValid
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		password := strings.TrimSpace(scanner.Text())
-		if password != "" {
-			commonPasswords[password] = struct{}{}
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		isValid = false
-		LogWithSeverity("ERR", fmt.Errorf("error reading file: %w", err))
-		return isValid
-	}
-
-	// * COMMON HASHES LIBRARY DITCHED BECAUSE OF SLOW PERFORMANCE: TESTED ~ >30 MINUTES TO CHECK ALL HASHES IN LIBRARY
-	// * Compared with hashed library in assets/common_password_libs_hashed.txt
-	// * for hashed := range commonHashes {
-	// *   if CheckPasswordHash(password, hashed) {
-	// * 	   // Password is common
-	// * 	   isValid = false
-	// * 	   return isValid
-	// *   }
-	// * }
-
-	// Use plain common pass lib instead
-	if _, exists := commonPasswords[password]; exists {
-		isValid = false
-		return isValid
-	}
-
-	return isValid
+	return passwordRegex.MatchString(password)
 }
 
 func ValidateRegisterReq(req dto.RegisterReq) (bool, string) {

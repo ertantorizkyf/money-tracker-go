@@ -33,7 +33,7 @@ func (r *UserRepository) GetAll() ([]models.User, error) {
 func (r *UserRepository) GetFirst(where models.UserWhere) (models.User, error) {
 	var user models.User
 
-	query := r.DB
+	query := r.DB.Model(&models.User{})
 
 	if where.Email != "" {
 		query.Where("email = ?", where.Email)
@@ -44,8 +44,17 @@ func (r *UserRepository) GetFirst(where models.UserWhere) (models.User, error) {
 	if where.Username != "" {
 		query.Where("username = ?", where.Username)
 	}
+	if where.OrEmail != "" {
+		query.Or("email = ?", where.OrEmail)
+	}
+	if where.OrPhone != "" {
+		query.Or("phone = ?", where.OrPhone)
+	}
+	if where.OrUsername != "" {
+		query.Or("username = ?", where.OrUsername)
+	}
 
-	err := query.Find(&user).Error
+	err := query.First(&user).Error
 	if err != nil {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, err)
 		return user, err
