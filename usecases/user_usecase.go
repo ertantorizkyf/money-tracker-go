@@ -48,9 +48,6 @@ func (uc *UserUseCase) RegisterUser(c *gin.Context, req dto.RegisterReq) (*strin
 		return nil, err
 	}
 
-	fmt.Println("=== DEBUG ===")
-	fmt.Println(user)
-
 	if user.ID > 0 {
 		helpers.LogWithSeverity(constants.LOGGER_SEVERITY_ERROR, constants.ERR_MESSAGE_DATA_TAKEN)
 		return nil, fmt.Errorf("an error has occurred: %s", constants.ERR_MESSAGE_DATA_TAKEN)
@@ -95,7 +92,7 @@ func (uc *UserUseCase) RegisterUser(c *gin.Context, req dto.RegisterReq) (*strin
 func (uc *UserUseCase) Login(c *gin.Context, req dto.LoginReq) (*string, error) {
 	user, err := uc.UserRepo.GetFirst(models.UserWhere{
 		Username: req.UsernameOrEmail,
-		Email:    req.UsernameOrEmail,
+		OrEmail:  req.UsernameOrEmail,
 	})
 
 	if err != nil {
